@@ -22,6 +22,9 @@ public class AuthController {
 
         authService.로그인(reqDTO);
 
+        session.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
 
         return "login까지 오나?";
     }

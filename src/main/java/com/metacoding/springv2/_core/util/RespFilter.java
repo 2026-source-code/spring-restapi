@@ -8,6 +8,7 @@ import java.io.*;
 
 @Slf4j
 public class RespFilter {
+    // GSON 라이브러리리
     private static ObjectMapper om = new ObjectMapper();
 
     public static void fail(HttpServletResponse response, int status, String msg) throws IOException {

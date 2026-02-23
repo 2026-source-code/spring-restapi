@@ -1,39 +1,41 @@
-# 프로젝트 분석 보고서 (업데이트)
+# 프로젝트 분석 보고서 V2
 
-## 1. 프로젝트 개요
+## 1. 기술 스택 (Tech Stack)
+- **Framework**: Spring Boot 3.5.5
+- **Language**: Java 21
+- **Database**: H2 (In-memory)
+- **ORM**: Spring Data JPA
+- **Security**: Spring Security, JWT (java-jwt 4.3.0)
+- **Utility**: Lombok, Validation
 
-본 프로젝트(`spring-rest-start`)는 Spring Boot 기반의 REST API 애플리케이션으로, JWT 토큰 기반의 사용자 인증 및 API를 제공하는 것을 목표로 합니다.
+## 2. 아키텍처 및 패턴
+- **Controller-Service-Repository**: 표준 레이어드 아키텍처 준수.
+- **REST API**: `/api/**` 경로를 통한 RESTful 웹 서비스 제공.
+- **DTO**: 모든 요청/응답은 `@Data`가 적용된 내부 클래스 형태의 DTO 사용 (평탄화된 구조 권장).
+- **Global Exception Handling**: `GlobalExceptionHandler`와 커스텀 예외(`Exception4xx`, `500`)를 통한 전역 예외 처리.
+- **Security Pattern**: JWT를 이용한 Stateless 인증. `JwtAuthorizationFilter`를 통해 `/api/**` 및 `/admin/**` 경로 권한 제어.
 
-## 2. 문서 기반 기능 명세 (README.md)
+## 3. 주요 기능 분석
+### 3.1 인증 및 유저 (Auth & User)
+- **회원가입/로그인**: BCrypt 암호화 및 JWT 토큰 발급.
+- **유저네임 중복체크**: 중복 여부 확인 API 제공.
+- **회원 정보 조회**: `/api/users/{id}` (인증 필요).
 
-`README.md` 파일에 따르면 다음 기능들이 명시되어 있습니다.
+### 3.2 게시판 (Board)
+- **목록보기**: `/api/boards` (평탄화된 DTO 리스트 반환).
+- **상세보기**: `/api/boards/{id}` (작성자 정보를 포함한 평탄화된 DTO 반환).
+- **리팩토링**: `rule1.md`에 따라 `var` 키워드 사용 및 내부 클래스 제거를 통한 최적화 완료.
 
-- 회원가입
-- 로그인
-- 유저네임 중복체크
+### 3.3 댓글 (Reply)
+- 엔티티 및 기본 클래스 구성 완료 (추가 기능 구현 대기 중).
 
-## 3. 현재 구현된 기능 분석 (코드 기반)
+## 4. 코드 컨벤션 및 규칙 (rule1.md)
+- **CORS**: `SecurityConfig`에서 중앙 관리.
+- **주석**: 모든 신규/수정 코드에 친절한 한글 주석 적용.
+- **스타일**: `AuthController` 패턴 준수 (`var` 사용, 간결한 로직).
+- **정리**: 불필요한 중복 코드(과거 CORS 필터 등) 및 설정값 제거 완료.
 
-코드 분석 결과, 현재 구현된 주요 기능은 다음과 같습니다.
-
-- **회원가입 (`POST /join`)**: `AuthController`와 `AuthService`를 통해 구현되어 있으며, 사용자 정보를 받아 데이터베이스에 저장합니다.
-- **로그인 (`POST /login`)**: `AuthController`와 `AuthService`를 통해 구현되어 있으며, 인증 성공 시 JWT 토큰을 발급합니다.
-- **CORS 정책 적용**: `FilterConfig`에 등록된 `CorsFilter`를 통해 CORS(Cross-Origin Resource Sharing)가 전역적으로 활성화되어 있습니다.
-- **사용자 정보 조회 (`GET /api/users/{id}`)**: `UserController`와 `UserService`를 통해 구현되어 있습니다. API 접근을 위해서는 JWT 인증이 필요합니다.
-- **전역 예외 처리**: `GlobalExceptionHandler`를 통해 `Exception4xx`, `Exception500` 등 커스텀 예외를 처리합니다.
-
-**- 참고 사항**
-
-- `README.md`에 명시된 **유저네임 중복체크** 기능은 현재 서버측 코드에서 구현이 확인되지 않았습니다.
-
-## 4. 완료된 개발 요구사항 (`.gem/rule1.md` 기준)
-
-`rule1.md`에 요청된 개발 항목들이 모두 완료되었습니다.
-
-- **CORS 필터 적용**: `FilterConfig`를 통해 필터를 등록하여 요구사항을 만족시켰습니다.
-- **사용자 정보 조회 기능 추가**: `UserController`에 `/api/users/{id}` 엔드포인트를 `AuthController`의 패턴에 맞게 구현 완료했습니다.
-
-## 5. 추가 제안
-
-- **유저네임 중복체크 기능 구현**: `README.md`와 기능을 일치시키기 위해 `GET /check-username?username={username}`과 같은 엔드포인트 구현을 제안합니다.
-- **테스트 코드 작성**: 주요 API 기능(회원가입, 로그인, 정보조회)에 대한 통합 테스트 또는 단위 테스트를 작성하여 코드 안정성을 높일 수 있습니다.
+## 5. 향후 과제
+- 댓글(Reply) 관련 API 기능 구체화 및 구현.
+- API 문서화 (Spring RestDocs 적용 여부 검토).
+- 통합 테스트 코드 보강.

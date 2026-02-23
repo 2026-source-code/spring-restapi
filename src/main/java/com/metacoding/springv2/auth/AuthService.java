@@ -4,6 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.metacoding.springv2._core.handler.ex.Exception400;
 import com.metacoding.springv2._core.handler.ex.Exception401;
 import com.metacoding.springv2._core.util.JwtUtil;
 import com.metacoding.springv2.auth.AuthRequest.JoinDTO;
@@ -30,6 +31,15 @@ public class AuthService {
         if(!isSamePassword) throw new Exception401("비밀번호가 틀렸어요");
 
         return JwtUtil.create(findUser);
+    }
+
+    @Transactional(readOnly = true)
+    public void 유저네임중복체크(String username) {
+        // 1. UserRepository에서 username 확인
+        userRepository.findByUsername(username)
+                .ifPresent(user -> {
+                    throw new Exception400("이미 존재하는 유저네임입니다");
+                });
     }
 
     @Transactional

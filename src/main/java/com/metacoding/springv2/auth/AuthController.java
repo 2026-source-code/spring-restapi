@@ -17,6 +17,15 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // 유저네임 중복체크
+    @GetMapping("/username-check")
+    public ResponseEntity<?> usernameCheck(String username) {
+        // 서비스에서 중복 체크 로직 수행
+        authService.유저네임중복체크(username);
+        // 중복되지 않으면 성공 응답 반환
+        return Resp.ok(null);
+    }
+
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody AuthRequest.JoinDTO reqDTO) {
         var respDTO = authService.회원가입(reqDTO);
